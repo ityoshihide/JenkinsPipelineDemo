@@ -16,16 +16,15 @@ pipeline {
             steps {
                 echo 'Deploying'
                 withCredentials([
-    [
-        $class: 'AmazonWebServicesCredentialsBinding',
-        credentialsId: 'MyAWS',
-        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-    ]
-]) {
-    sh(script: 'aws s3 cp FilePath(FROM) S3Path(TO)')
-}
-
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'MyAWS',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) {
+                    sh(script: 'aws s3 cp FilePath(FROM) S3Path(TO)')
+                }
             }
         }
         stage('Test') {
@@ -33,12 +32,12 @@ pipeline {
                 echo 'Testing'
                 script {
                     def url = 'https://test-jenkins-itou.s3.ap-northeast-1.amazonaws.com/index.html'
-                    def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' '$url'", returnStdout: true)
+                    def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' '$url'", returnStdout: true).trim()
 
                     if (response == '200') {
                         echo 'Test OK'
                     } else {
-                        echo response
+                        echo "Response code: ${response}"
                         error 'Test NG'
                     }
                 }
@@ -51,3 +50,4 @@ pipeline {
         }
     }
 }
+
