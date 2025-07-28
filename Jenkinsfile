@@ -4,27 +4,34 @@ pipeline {
     stages {
         stage('Hello') {
             steps {
-                echo 'Hello from github hook triger World'
+                echo 'Hello from GitHub hook trigger'
             }
         }
-        stage('build') {
+        stage('Build') {
             steps {
-                echo 'building'
+                echo 'Building'
             }
         }
-        stage('deploy') {
+        stage('Deploy') {
             steps {
-                echo 'deploying'
+                echo 'Deploying'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'MyAWS',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]){
+                        sh(script: 'aws s3 cp FilePath(FROM) S3Path(TO)')
+                }
             }
         }
-        stage('test') {
+        stage('Test') {
             steps {
-                echo 'testing'
+                echo 'Testing'
             }
         }
-        stage('release') {
+        stage('Release') {
             steps {
-                echo 'releasing'
+                echo 'Releasing'
             }
         }
     }
